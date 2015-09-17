@@ -34,8 +34,8 @@ def densityProbCaculate(x, miu, sigma):
 #            max_prob, result = prob, ctg
 #    return result
    
-def probCaculate(s, items):
-    return ((items == s).sum() + 1.) / len(items)
+def probCaculate(s, items, category_n):
+    return ((items == s).sum() + 1.) / (len(items) + category_n)
 
 #def discreteBayes(train, test):
 #    category = set(train[:, -1])
@@ -60,7 +60,7 @@ def naiveBayes(train, test, method):
         prob_ctg = float(len(data_ctg)) / float(len(train))
         if method == 'dis':
             prob_feature = reduce(lambda x,y:x*y, 
-                                  map(probCaculate, test, data_ctg.transpose()))
+                                  map(probCaculate, test, data_ctg.transpose(), len(category)))
         else:
             data_ctg = data_ctg.astype(float)
             prob_feature = reduce(lambda x,y:x*y, 
