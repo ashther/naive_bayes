@@ -12,12 +12,18 @@ naiveBayes(data[, -length(data)], data[, length(data)]) %>%
 
 naiveBayesR <- function(df, con) {
     n <- length(df)
-    prop_table <- by(df, df[, n], 
-                     function(x)sapply(x, function(y)prop.table(table(y))))
+    prop_table <- by(df[, -n], df[, n], 
+                     function(x)sapply(x, function(y){
+                         temp <- table(y)
+                         if (any(temp == 0)) {
+                             temp <- temp + 1
+                         }
+                         prop.table(temp)
+                     }))
     
     ctg <- prop.table(table(df[, n]))
     prop_result <- sapply(names(ctg), function(c){
-        Map(function(x, y)return(x[y]), prop_table[[c]][-n], con) %>% 
+        Map(function(x, y)return(x[y]), prop_table[[c]], con) %>% 
             do.call('rbind', .) %>% 
             apply(2, prod) %>% 
             `*`(ctg[c])
